@@ -5,7 +5,7 @@
 
     "ReplicatedStorage": {
       "Shared": {
-        "$path": "src/"
+        "$path": "motion/"
       }
     }
 
