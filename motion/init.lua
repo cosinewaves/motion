@@ -10,6 +10,11 @@ export type Signal<T...> = internalTypings.Signal<T...>
 local motion = {} :: {new: <T...>() -> Signal<any>}
 motion.__index = motion
 
+local function output(msg: string): ()
+  print(`[motion]: {msg}`)
+  return
+end
+
 function motion.new<T...>(): Signal<T...>
     return setmetatable({
         _head = nil :: Connection?,
@@ -175,7 +180,6 @@ function motion:UseThrottle<T...>(seconds: number): MiddlewareHandle
         end
     end)
 end
-
 
 function motion:UseDebounce<T...>(seconds: number): MiddlewareHandle
     local debounceTask
