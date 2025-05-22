@@ -8,7 +8,7 @@ export type Connection = internalTypings.Connection
 export type MiddlewareHandle = internalTypings.MiddlewareHandle
 export type Signal<T...> = internalTypings.Signal<T...>
 
-local motion = {} :: Signal<any>
+local motion = {} :: {new: <T...>() -> Signal<any>}
 motion.__index = motion
 
 function motion.new<T...>(): Signal<T...>
