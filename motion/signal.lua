@@ -107,7 +107,7 @@ function Signal:DisconnectAll()
 end
 
 setmetatable(signal, {
-	__call = nil,
+	--__call = nil,
 	__index = Signal
 })
 
