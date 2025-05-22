@@ -63,7 +63,7 @@ end
 	@return T... | (nil, true)
 	Yields until the signal fires and returns the fired arguments.
 ]=]
-function Signal:Wait<T...>(timeoutSeconds: number?): ...T... | (nil, true)
+function Signal:Wait<T...>(timeoutSeconds: number?): ...any
 	local thread = coroutine.running()
 	local conn: internalTypings.Connection
 	conn = self:Connect(function(...: T...)
