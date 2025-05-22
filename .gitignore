@@ -1,6 +1,4 @@
-# Project place file
 /motion.rbxlx
-
-# Roblox Studio lock files
 /*.rbxlx.lock
 /*.rbxl.lock
+/*.rokit.toml

@@ -1,3 +1,2 @@
-return function()
-	print("Hello, world!")
-endt
+--!strict
+-- init.lua
