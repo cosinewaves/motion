@@ -9,15 +9,19 @@ export type MiddlewareHandle = internalTypings.MiddlewareHandle
 export type Signal<T...> = internalTypings.Signal<T...>
 
 export type Motion<T...> = {
+  -- public
     new: () -> Signal<T...>,
     Connect: (self: Signal<T...>, callback: (T...) -> ()) -> Connection,
     Once: (self: Signal<T...>, callback: (T...) -> ()) -> Connection,
     Wait: (self: Signal<T...>, timeoutSeconds: number?) -> ...any,
     Fire: (self: Signal<T...>, ...T) -> (),
     DisconnectAll: (self: Signal<T...>) -> (),
+  -- private
+  __index: Connection,
+
 }
 
-local motion: Motion<any> = {}
+local motion = {} :: Motion<any>
 motion.__index = motion
 
 function motion.new<T...>(): internalTypings.Signal<T...>
