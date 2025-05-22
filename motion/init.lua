@@ -77,7 +77,9 @@ function motion:Until<T...>(
           connection:Disconnect() -- Disconnect after firing
       end
   end)
-return connection
+
+  return connection
+end
 
 function motion:WhileActive<T...>(check: () -> boolean, callback: (T...) -> ()): Connection
     local connection
