@@ -70,16 +70,16 @@ function motion:Until<T...>(
   callback: ((T...) -> ())
 ): Connection
 
-local connection
-connection = self:Connect(function(...)
-    if predicate(...) then
-        callback(...)
-        connection:Disconnect() -- Disconnect after firing
-    end
-end)
+  local connection
+  connection = self:Connect(function(...)
+      if predicate(...) then
+          callback(...)
+          connection:Disconnect() -- Disconnect after firing
+      end
+  end)
 return connection
 
-function Signal:WhileActive<T...>(check: () -> boolean, callback: (T...) -> ()): Connection
+function motion:WhileActive<T...>(check: () -> boolean, callback: (T...) -> ()): Connection
     local connection
     connection = self:Connect(function(...)
         if check() then
@@ -89,19 +89,19 @@ function Signal:WhileActive<T...>(check: () -> boolean, callback: (T...) -> ()):
     return connection
 end
 
-function Signal:ConnectForked<T...>(callback: (T...) -> ()): Connection
+function motion:ConnectForked<T...>(callback: (T...) -> ()): Connection
     return self:Connect(function(...)
         task.spawn(callback, ...)
     end)
 end
 
-function Signal:ConnectDeferred<T...>(callback: (T...) -> ()): Connection
+function motion:ConnectDeferred<T...>(callback: (T...) -> ()): Connection
     return self:Connect(function(...)
         task.defer(callback, ...)
     end)
 end
 
-function Signal:ConnectAsync<T...>(callback: (T...) -> ()): Connection
+function motion:ConnectAsync<T...>(callback: (T...) -> ()): Connection
     return self:Connect(function(...)
         coroutine.wrap(callback)(...)
     end)
