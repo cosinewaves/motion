@@ -3,10 +3,10 @@
 - [X] Connect: (self: Signal<T...>, callback: (T...) -> ()) -> Connection  
 - [X] Once: (self: Signal<T...>, callback: (T...) -> ()) -> Connection  
 - [X] Until: (self: Signal<T...>, predicate: (T...) -> boolean, callback: (T...) -> ()) -> Connection  
-- [ ] WhileActive: (self: Signal<T...>, check: () -> boolean, callback: (T...) -> ()) -> Connection  
-- [ ] ConnectForked: (self: Signal<T...>, callback: (T...) -> ()) -> Connection  
-- [ ] ConnectDeferred: (self: Signal<T...>, callback: (T...) -> ()) -> Connection  
-- [ ] ConnectAsync: (self: Signal<T...>, callback: (T...) -> ()) -> Connection  
+- [X] WhileActive: (self: Signal<T...>, check: () -> boolean, callback: (T...) -> ()) -> Connection  
+- [X] ConnectForked: (self: Signal<T...>, callback: (T...) -> ()) -> Connection  
+- [X] ConnectDeferred: (self: Signal<T...>, callback: (T...) -> ()) -> Connection  
+- [X] ConnectAsync: (self: Signal<T...>, callback: (T...) -> ()) -> Connection  
 
 - [X] Fire: (self: Signal<T...>, T...) -> ()  
 - [ ] FireDeferred: (self: Signal<T...>, T...) -> ()  

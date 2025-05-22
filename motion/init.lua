@@ -79,6 +79,33 @@ connection = self:Connect(function(...)
 end)
 return connection
 
+function Signal:WhileActive<T...>(check: () -> boolean, callback: (T...) -> ()): Connection
+    local connection
+    connection = self:Connect(function(...)
+        if check() then
+            callback(...)
+        end
+    end)
+    return connection
 end
+
+function Signal:ConnectForked<T...>(callback: (T...) -> ()): Connection
+    return self:Connect(function(...)
+        task.spawn(callback, ...)
+    end)
+end
+
+function Signal:ConnectDeferred<T...>(callback: (T...) -> ()): Connection
+    return self:Connect(function(...)
+        task.defer(callback, ...)
+    end)
+end
+
+function Signal:ConnectAsync<T...>(callback: (T...) -> ()): Connection
+    return self:Connect(function(...)
+        coroutine.wrap(callback)(...)
+    end)
+end
+
 
 return motion
