@@ -1,4 +1,3 @@
---!strict
 -- init.lua
 
 local connection = require(script.connection)
