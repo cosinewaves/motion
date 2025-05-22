@@ -9,22 +9,22 @@
 - [X] ConnectAsync: (self: Signal<T...>, callback: (T...) -> ()) -> Connection  
 
 - [X] Fire: (self: Signal<T...>, T...) -> ()  
-- [ ] FireDeferred: (self: Signal<T...>, T...) -> ()  
-- [ ] FireAsync: (self: Signal<T...>, T...) -> ()  
-- [ ] FireBatched: (self: Signal<T...>, T...) -> ()  
-- [ ] FireWithMiddleware: (self: Signal<T...>, T...) -> ()  
+- [X] FireDeferred: (self: Signal<T...>, T...) -> ()  
+- [X] FireAsync: (self: Signal<T...>, T...) -> ()  
+- [X] FireBatched: (self: Signal<T...>, T...) -> ()  
+- [X] FireWithMiddleware: (self: Signal<T...>, T...) -> ()  
 
 - [X] Wait: (self: Signal<T...>, timeoutSeconds: number?) -> any  
 
-- [ ] Use: (self: Signal<T...>, middleware: (next: (T...) -> (), T...) -> ()) -> MiddlewareHandle  
-- [ ] UseFilter: (self: Signal<T...>, predicate: (T...) -> boolean) -> MiddlewareHandle  
-- [ ] UseMap: <U...>(self: Signal<T...>, mapper: (T...) -> U...) -> MiddlewareHandle  
-- [ ] UseThrottle: (self: Signal<T...>, seconds: number) -> MiddlewareHandle  
-- [ ] UseDebounce: (self: Signal<T...>, seconds: number) -> MiddlewareHandle  
-- [ ] UseDelay: (self: Signal<T...>, seconds: number) -> MiddlewareHandle  
-- [ ] UseLog: (self: Signal<T...>, prefix: string?) -> MiddlewareHandle  
-- [ ] UseCatch: (self: Signal<T...>, handler: (any) -> ()) -> MiddlewareHandle  
-- [ ] UseCancel: (self: Signal<T...>, predicate: (T...) -> boolean) -> MiddlewareHandle  
+- [X] Use: (self: Signal<T...>, middleware: (next: (T...) -> (), T...) -> ()) -> MiddlewareHandle  
+- [X] UseFilter: (self: Signal<T...>, predicate: (T...) -> boolean) -> MiddlewareHandle  
+- [X] UseMap: <U...>(self: Signal<T...>, mapper: (T...) -> U...) -> MiddlewareHandle  
+- [X] UseThrottle: (self: Signal<T...>, seconds: number) -> MiddlewareHandle  
+- [X] UseDebounce: (self: Signal<T...>, seconds: number) -> MiddlewareHandle  
+- [X] UseDelay: (self: Signal<T...>, seconds: number) -> MiddlewareHandle  
+- [X] UseLog: (self: Signal<T...>, prefix: string?) -> MiddlewareHandle  
+- [X] UseCatch: (self: Signal<T...>, handler: (any) -> ()) -> MiddlewareHandle  
+- [X] UseCancel: (self: Signal<T...>, predicate: (T...) -> boolean) -> MiddlewareHandle  
 
 - [ ] GetListenerCount: (self: Signal<T...>) -> number  
 - [ ] GetConnections: (self: Signal<T...>) -> { Connection }  

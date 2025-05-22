@@ -137,5 +137,90 @@ function motion:FireWithMiddleware<T...>(...: T...)
     end
 end
 
+function motion:Use<T...>(middleware: (next: (T...) -> (), T...) -> ()): MiddlewareHandle
+    local handle = {
+        Disconnect = function()
+            self._middleware = nil
+        end
+    }
+
+    self._middleware = function(next, ...)
+        middleware(next, ...)
+    end
+
+    return handle
+end
+
+function motion:UseFilter<T...>(predicate: (T...) -> boolean): MiddlewareHandle
+    return self:Use(function(next, ...)
+        if predicate(...) then
+            next(...)
+        end
+    end)
+end
+
+function motion:UseMap<U...>(mapper: (T...) -> U...): MiddlewareHandle
+    return self:Use(function(next, ...)
+        next(mapper(...))
+    end)
+end
+
+function motion:UseThrottle<T...>(seconds: number): MiddlewareHandle
+    local lastCall = 0
+    return self:Use(function(next, ...)
+        local now = tick()
+        if now - lastCall >= seconds then
+            lastCall = now
+            next(...)
+        end
+    end)
+end
+
+function motion:UseDebounce<T...>(seconds: number): MiddlewareHandle
+    local debounceTask
+    return self:Use(function(next, ...)
+        if debounceTask then
+            task.cancel(debounceTask)
+        end
+        debounceTask = task.delay(seconds, function()
+            next(...)
+        end)
+    end)
+end
+
+function motion:UseDelay<T...>(seconds: number): MiddlewareHandle
+    return self:Use(function(next, ...)
+        task.delay(seconds, function()
+            next(...)
+        end)
+    end)
+end
+
+function motion:UseLog<T...>(prefix: string?): MiddlewareHandle
+    return self:Use(function(next, ...)
+        print((prefix or "[motion]"), ...)
+        next(...)
+    end)
+end
+
+function motion:UseCatch<T...>(handler: (any) -> ()): MiddlewareHandle
+    return self:Use(function(next, ...)
+        local success, err = pcall(function()
+            next(...)
+        end)
+        if not success then
+            handler(err)
+        end
+    end)
+end
+
+function motion:UseCancel<T...>(predicate: (T...) -> boolean): MiddlewareHandle
+    return self:Use(function(next, ...)
+        if not predicate(...) then
+            next(...)
+        end
+    end)
+end
+
 
 return motion
