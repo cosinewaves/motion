@@ -8,13 +8,22 @@ export type Connection = internalTypings.Connection
 export type MiddlewareHandle = internalTypings.MiddlewareHandle
 export type Signal<T...> = internalTypings.Signal<T...>
 
-local motion = {}
+export type Motion<T...> = {
+    new: () -> Signal<T...>,
+    Connect: (self: Signal<T...>, callback: (T...) -> ()) -> Connection,
+    Once: (self: Signal<T...>, callback: (T...) -> ()) -> Connection,
+    Wait: (self: Signal<T...>, timeoutSeconds: number?) -> ...any,
+    Fire: (self: Signal<T...>, ...T) -> (),
+    DisconnectAll: (self: Signal<T...>) -> (),
+}
+
+local motion: Motion<any> = {}
 motion.__index = motion
 
 function motion.new<T...>(): internalTypings.Signal<T...>
     return setmetatable({
         _head = nil :: internalTypings.Connection?,
-    }, Signal) :: any
+    }, motion) :: any
 end
 
 function motion:Connect<T...>(callback: (T...) -> ()): internalTypings.Connection
