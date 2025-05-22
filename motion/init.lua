@@ -78,6 +78,4 @@ function motion:DisconnectAll()
     self._head = nil
 end
 
-return {
-    motion = motion
-}
+return motion
