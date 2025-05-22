@@ -222,5 +222,52 @@ function motion:UseCancel<T...>(predicate: (T...) -> boolean): MiddlewareHandle
     end)
 end
 
+function motion:GetListenerCount(): number
+    local count = 0
+    local current = self._head
+    while current do
+        if current._connected then
+            count += 1
+        end
+        current = current._next
+    end
+    return count
+end
+
+function motion:GetConnections(): { Connection }
+    local connections = {}
+    local current = self._head
+    while current do
+        table.insert(connections, current)
+        current = current._next
+    end
+    return connections
+end
+
+function motion:DebugDescribe(): string
+    local description = `{Motion Signal: Listener Count = ` .. self:GetListenerCount() .. `}`
+    return description
+end
+
+function motion:PrintDebugInfo(): ()
+    print(self:DebugDescribe())
+    local current = self._head
+    while current do
+        print(`- Connection: `, current._callback)
+        current = current._next
+    end
+end
+
+function motion:IsConnected(callback: (T...) -> ()): boolean
+    local current = self._head
+    while current do
+        if current._connected and current._callback == callback then
+            return true
+        end
+        current = current._next
+    end
+    return false
+end
+
 
 return motion

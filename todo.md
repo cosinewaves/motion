@@ -26,8 +26,8 @@
 - [X] UseCatch: (self: Signal<T...>, handler: (any) -> ()) -> MiddlewareHandle  
 - [X] UseCancel: (self: Signal<T...>, predicate: (T...) -> boolean) -> MiddlewareHandle  
 
-- [ ] GetListenerCount: (self: Signal<T...>) -> number  
-- [ ] GetConnections: (self: Signal<T...>) -> { Connection }  
-- [ ] DebugDescribe: (self: Signal<T...>) -> string  
-- [ ] PrintDebugInfo: (self: Signal<T...>) -> ()  
-- [ ] IsConnected: (self: Signal<T...>, callback: (T...) -> ()) -> boolean  
+- [X] GetListenerCount: (self: Signal<T...>) -> number  
+- [X] GetConnections: (self: Signal<T...>) -> { Connection }  
+- [X] DebugDescribe: (self: Signal<T...>) -> string  
+- [X] PrintDebugInfo: (self: Signal<T...>) -> ()  
+- [X] IsConnected: (self: Signal<T...>, callback: (T...) -> ()) -> boolean  
