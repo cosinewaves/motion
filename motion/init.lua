@@ -65,6 +65,20 @@ function motion:DisconnectAll(): ()
     return
 end
 
+function motion:Until<T...>(
+  predicate: ((T...) -> boolean),
+  callback: ((T...) -> ())
+): Connection
 
+local connection
+connection = self:Connect(function(...)
+    if predicate(...) then
+        callback(...)
+        connection:Disconnect() -- Disconnect after firing
+    end
+end)
+return connection
+
+end
 
 return motion
