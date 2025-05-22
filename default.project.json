@@ -7,8 +7,13 @@
       "motion": {
         "$path": "motion/"
       }
-    }
+    },
 
+    "StarterPack": {
+      "tests": {
+        "$path": "tests/"
+      }
+    }
 
   }
 }
