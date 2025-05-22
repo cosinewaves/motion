@@ -1,20 +1,20 @@
 
 ### Middleware Functions
-- [ ] Connect: (self: Signal<T...>, callback: (T...) -> ()) -> Connection  
-- [ ] Once: (self: Signal<T...>, callback: (T...) -> ()) -> Connection  
+- [X] Connect: (self: Signal<T...>, callback: (T...) -> ()) -> Connection  
+- [X] Once: (self: Signal<T...>, callback: (T...) -> ()) -> Connection  
 - [ ] Until: (self: Signal<T...>, predicate: (T...) -> boolean, callback: (T...) -> ()) -> Connection  
 - [ ] WhileActive: (self: Signal<T...>, check: () -> boolean, callback: (T...) -> ()) -> Connection  
 - [ ] ConnectForked: (self: Signal<T...>, callback: (T...) -> ()) -> Connection  
 - [ ] ConnectDeferred: (self: Signal<T...>, callback: (T...) -> ()) -> Connection  
 - [ ] ConnectAsync: (self: Signal<T...>, callback: (T...) -> ()) -> Connection  
 
-- [ ] Fire: (self: Signal<T...>, T...) -> ()  
+- [X] Fire: (self: Signal<T...>, T...) -> ()  
 - [ ] FireDeferred: (self: Signal<T...>, T...) -> ()  
 - [ ] FireAsync: (self: Signal<T...>, T...) -> ()  
 - [ ] FireBatched: (self: Signal<T...>, T...) -> ()  
 - [ ] FireWithMiddleware: (self: Signal<T...>, T...) -> ()  
 
-- [ ] Wait: (self: Signal<T...>, timeoutSeconds: number?) -> any  
+- [X] Wait: (self: Signal<T...>, timeoutSeconds: number?) -> any  
 
 - [ ] Use: (self: Signal<T...>, middleware: (next: (T...) -> (), T...) -> ()) -> MiddlewareHandle  
 - [ ] UseFilter: (self: Signal<T...>, predicate: (T...) -> boolean) -> MiddlewareHandle  
