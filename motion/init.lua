@@ -7,6 +7,11 @@ export type Connection = internalTypings.Connection
 export type MiddlewareHandle = internalTypings.MiddlewareHandle
 export type Signal<T...> = internalTypings.Signal<T...>
 
+--[=[
+  @class motion
+
+  Motion is a lightweight, modular signal system built for event-driven programming in Lua. This release introduces a complete set of connection management, middleware utilities, and event firing capabilities to streamline reactive workflows.
+]=]
 local motion = {} :: {new: <T...>() -> Signal<any>}
 motion.__index = motion
 
@@ -15,12 +20,25 @@ local function output(msg: string): ()
   return
 end
 
+--[=[
+  Create a new signal
+
+  @within motion
+  @return Signal<T...>
+]=]
 function motion.new<T...>(): Signal<T...>
     return setmetatable({
         _head = nil :: Connection?,
     }, motion)
 end
 
+--[=[
+  Connect a signal to a callback function, which will automatically be called when your signal is Fired.
+
+  @within motion
+  @param callback T... -- Your callback function
+  @return Connection
+]=]
 function motion:Connect<T...>(callback: (T...) -> ()): Connection
     local conn = connection.new(self, callback)
     conn._next = self._head
@@ -28,6 +46,13 @@ function motion:Connect<T...>(callback: (T...) -> ()): Connection
     return conn
 end
 
+--[=[
+  Disconnect a callback function after it has been fired.
+
+  @within motion
+  @param callback T... -- Your callback function
+  @return Connection
+]=]
 function motion:Once<T...>(callback: (T...) -> ()): Connection
     local conn: Connection
     conn = self:Connect(function(...: T...)
@@ -37,6 +62,13 @@ function motion:Once<T...>(callback: (T...) -> ()): Connection
     return conn
 end
 
+--[=[
+  Waits an amount of time before firing the signal.
+
+  @within motion
+  @param timeoutSeconds number? -- Defaults to one second if not provided
+  @return ...T
+]=]
 function motion:Wait<T...>(timeoutSeconds: number?): ...T
     local thread = coroutine.running()
     local conn: Connection
@@ -47,6 +79,11 @@ function motion:Wait<T...>(timeoutSeconds: number?): ...T
 
     if timeoutSeconds then
         task.delay(timeoutSeconds, function()
+            conn:Disconnect()
+            task.spawn(thread, nil, true)
+        end)
+      else
+        task.delay(1, function()
             conn:Disconnect()
             task.spawn(thread, nil, true)
         end)
