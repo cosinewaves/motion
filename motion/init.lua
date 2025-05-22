@@ -257,10 +257,10 @@ function motion:DebugDescribe(): string
 end
 
 function motion:PrintDebugInfo(): ()
-    print(self:DebugDescribe())
+    output(self:DebugDescribe())
     local current = self._head
     while current do
-        print(`- Connection: `, current._callback)
+        output(`- Connection: `, current._callback)
         current = current._next
     end
 end
