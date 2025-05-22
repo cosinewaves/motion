@@ -109,5 +109,33 @@ function motion:ConnectAsync<T...>(callback: (T...) -> ()): Connection
     end)
 end
 
+function motion:FireDeferred<T...>(...: T...)
+    task.defer(self.Fire, self, ...)
+end
+
+function motion:FireAsync<T...>(...: T...)
+    task.spawn(self.Fire, self, ...)
+end
+
+function motion:FireBatched<T...>(...: T...)
+    local batch = {...}
+    task.spawn(function()
+        for _, valueSet in ipairs(batch) do
+            self:Fire(table.unpack(valueSet))
+        end
+    end)
+end
+
+function motion:FireWithMiddleware<T...>(...: T...)
+    local current = self._head
+    while current do
+        if current._connected then
+            local nextMiddleware = function(...) current._callback(...) end
+            task.spawn(current._middleware or nextMiddleware, ...)
+        end
+        current = current._next
+    end
+end
+
 
 return motion
