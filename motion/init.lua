@@ -60,8 +60,11 @@ function motion:Fire<T...>(...: T...)
     end
 end
 
-function motion:DisconnectAll()
+function motion:DisconnectAll(): ()
     self._head = nil
+    return
 end
+
+
 
 return motion
