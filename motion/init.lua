@@ -176,22 +176,25 @@ function motion:UseThrottle<T...>(seconds: number): MiddlewareHandle
     end)
 end
 
+
 function motion:UseDebounce<T...>(seconds: number): MiddlewareHandle
     local debounceTask
     return self:Use(function(next, ...)
+        local args = {...} -- Capture varargs
         if debounceTask then
             task.cancel(debounceTask)
         end
         debounceTask = task.delay(seconds, function()
-            next(...)
+            next(table.unpack(args)) -- Ensure varargs persist after delay
         end)
     end)
 end
 
 function motion:UseDelay<T...>(seconds: number): MiddlewareHandle
     return self:Use(function(next, ...)
+        local args = {...} -- Capture varargs explicitly
         task.delay(seconds, function()
-            next(...)
+            next(table.unpack(args)) -- Unpack varargs inside delayed function
         end)
     end)
 end
@@ -205,9 +208,9 @@ end
 
 function motion:UseCatch<T...>(handler: (any) -> ()): MiddlewareHandle
     return self:Use(function(next, ...)
-        local success, err = pcall(function()
+        local success, err = pcall(function(...)
             next(...)
-        end)
+        end, ...) -- Pass varargs explicitly to `pcall`
         if not success then
             handler(err)
         end
@@ -245,7 +248,7 @@ function motion:GetConnections(): { Connection }
 end
 
 function motion:DebugDescribe(): string
-    local description = `{Motion Signal: Listener Count = ` .. self:GetListenerCount() .. `}`
+    local description = `Motion Signal: Listener Count =  {self:GetListenerCount()} `
     return description
 end
 
