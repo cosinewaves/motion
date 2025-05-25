@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkdocs=self.webpackChunkdocs||[]).push([[169],{4410:s=>{s.exports=JSON.parse('{"sourceUrl":"https://github.com/cosinewaves/motion/blob/master","baseUrl":"/","classOrder":[],"apiCategories":[]}')}}]);
