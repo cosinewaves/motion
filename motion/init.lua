@@ -8,7 +8,7 @@ export type MiddlewareHandle = internalTypings.MiddlewareHandle
 export type Signal<T...> = internalTypings.Signal<T...>
 
 --[=[
-  @class motion
+  @class Signal
 
   Motion is a lightweight, modular signal system built for event-driven programming in Lua. This release introduces a complete set of connection management, middleware utilities, and event firing capabilities to streamline reactive workflows.
 ]=]
@@ -23,7 +23,7 @@ end
 --[=[
   Create a new signal
 
-  @within motion
+  @within Signal
   @return Signal<T...>
 ]=]
 function motion.new<T...>(): Signal<T...>
@@ -35,7 +35,7 @@ end
 --[=[
   Connect a signal to a callback function, which will automatically be called when your signal is Fired.
 
-  @within motion
+  @within Signal
   @param callback T... -- Your callback function
   @return Connection
 ]=]
@@ -49,7 +49,7 @@ end
 --[=[
   Disconnect a callback function after it has been fired.
 
-  @within motion
+  @within Signal
   @param callback T... -- Your callback function
   @return Connection
 ]=]
@@ -65,7 +65,7 @@ end
 --[=[
   Waits an amount of time before firing the signal.
 
-  @within motion
+  @within Signal
   @param timeoutSeconds number? -- Defaults to one second if not provided
   @return ...T
 ]=]
@@ -95,7 +95,7 @@ end
 --[=[
   Dispatches the signal to all connected listeners.
 
-  @within motion
+  @within Signal
   @param ... T...
   @return ()
 ]=]
@@ -112,7 +112,7 @@ end
 --[=[
   Disconnects all connected listeners.
 
-  @within motion
+  @within Signal
   @return ()
 ]=]
 function motion:DisconnectAll(): ()
@@ -123,7 +123,7 @@ end
 --[=[
   Listens until the predicate evaluates to true, then disconnects.
 
-  @within motion
+  @within Signal
   @param predicate ((T...) -> boolean)
   @return Connection
 ]=]
@@ -146,7 +146,7 @@ end
 --[=[
   Fires only when the check function evaluates to true.
 
-  @within motion
+  @within Signal
   @param check () -> boolean
   @param callback (T...) -> ()
   @return Connection
@@ -164,7 +164,7 @@ end
 --[=[
   Fires the listener in a separate task using task.spawn, ensuring parallel execution.
 
-  @within motion
+  @within Signal
   @param callback (T...) -> ()
   @return Connection
 ]=]
@@ -177,7 +177,7 @@ end
 --[=[
   Defers execution using task.defer, waiting until the current thread completes.
 
-  @within motion
+  @within Signal
   @param callback (T...) -> ()
   @return Connection
 ]=]
@@ -190,7 +190,7 @@ end
 --[=[
   Wraps the listener in a coroutine for concurrent execution.
 
-  @within motion
+  @within Signal
   @param callback (T...) -> ()
   @return Connection
 ]=]
@@ -203,7 +203,7 @@ end
 --[=[
     Fires the signal using `task.defer`, ensuring it runs after the current execution thread completes.
 
-    @within motion
+    @within Signal
     @param ... T...
 ]=]
 function motion:FireDeferred<T...>(...: T...)
@@ -213,7 +213,7 @@ end
 --[=[
     Fires the signal asynchronously using `task.spawn`, reducing potential performance bottlenecks.
 
-    @within motion
+    @within Signal
     @param ... T...
 ]=]
 function motion:FireAsync<T...>(...: T...)
@@ -223,7 +223,7 @@ end
 --[=[
     Fires multiple sets of arguments in batch mode. Each value set is dispatched in sequence using `task.spawn`.
 
-    @within motion
+    @within Signal
     @param ... T... Multiple tables of arguments (each a {T...})
 ]=]
 function motion:FireBatched<T...>(...: T...)
@@ -238,7 +238,7 @@ end
 --[=[
     Fires the signal through any registered middleware before invoking listeners.
 
-    @within motion
+    @within Signal
     @param ... T...
 ]=]
 function motion:FireWithMiddleware<T...>(...: T...)
@@ -255,7 +255,7 @@ end
 --[=[
     Applies a custom middleware to intercept signal execution. Only one middleware can be active at a time.
 
-    @within motion
+    @within Signal
     @param middleware (next: (T...) -> (), ...T) -> ()
     @return MiddlewareHandle
 ]=]
@@ -276,7 +276,7 @@ end
 --[=[
     Filters events based on a predicate. Only events that return `true` are allowed through.
 
-    @within motion
+    @within Signal
     @param predicate (T...) -> boolean
     @return MiddlewareHandle
 ]=]
@@ -291,7 +291,7 @@ end
 --[=[
     Transforms signal arguments before they are passed to listeners.
 
-    @within motion
+    @within Signal
     @param mapper (T...) -> U...
     @return MiddlewareHandle
 ]=]
@@ -304,7 +304,7 @@ end
 --[=[
     Throttles the signal, allowing it to fire at most once per given time interval.
 
-    @within motion
+    @within Signal
     @param seconds number
     @return MiddlewareHandle
 ]=]
@@ -322,7 +322,7 @@ end
 --[=[
     Debounces the signal. Only fires after no new signal is received within the given time frame.
 
-    @within motion
+    @within Signal
     @param seconds number
     @return MiddlewareHandle
 ]=]
@@ -342,7 +342,7 @@ end
 --[=[
     Delays the signal by the specified amount of time before calling listeners.
 
-    @within motion
+    @within Signal
     @param seconds number
     @return MiddlewareHandle
 ]=]
@@ -358,7 +358,7 @@ end
 --[=[
     Logs signal firings to the console for debugging purposes.
 
-    @within motion
+    @within Signal
     @param prefix string? Optional log prefix
     @return MiddlewareHandle
 ]=]
@@ -372,7 +372,7 @@ end
 --[=[
     Wraps signal execution in a `pcall`, catching and handling any runtime errors.
 
-    @within motion
+    @within Signal
     @param handler (any) -> () Error handler callback
     @return MiddlewareHandle
 ]=]
@@ -390,7 +390,7 @@ end
 --[=[
     Cancels the signal if the given predicate returns `true`.
 
-    @within motion
+    @within Signal
     @param predicate (T...) -> boolean
     @return MiddlewareHandle
 ]=]
@@ -405,7 +405,7 @@ end
 --[=[
     Returns the number of active listeners connected to the signal.
 
-    @within motion
+    @within Signal
     @return number
 ]=]
 function motion:GetListenerCount(): number
@@ -423,7 +423,7 @@ end
 --[=[
     Returns a list of all connection handles attached to this signal.
 
-    @within motion
+    @within Signal
     @return { Connection }
 ]=]
 function motion:GetConnections(): { Connection }
@@ -439,7 +439,7 @@ end
 --[=[
     Returns a string summary of the signal's current listener state.
 
-    @within motion
+    @within Signal
     @return string
 ]=]
 function motion:DebugDescribe(): string
@@ -450,7 +450,7 @@ end
 --[=[
     Prints detailed debug information about the signal and its listeners.
 
-    @within motion
+    @within Signal
 ]=]
 function motion:PrintDebugInfo(): ()
     output(self:DebugDescribe())
@@ -464,7 +464,7 @@ end
 --[=[
     Checks if the given callback is currently connected to the signal.
 
-    @within motion
+    @within Signal
     @param callback (T...) -> ()
     @return boolean
 ]=]
