@@ -92,7 +92,14 @@ function motion:Wait<T...>(timeoutSeconds: number?): ...T
     return coroutine.yield()
 end
 
-function motion:Fire<T...>(...: T...)
+--[=[
+  Dispatches the signal to all connected listeners.
+
+  @within motion
+  @param ... T...
+  @return ()
+]=]
+function motion:Fire<T...>(...: T...): ()
     local current = self._head
     while current do
         if current._connected then
@@ -102,11 +109,24 @@ function motion:Fire<T...>(...: T...)
     end
 end
 
+--[=[
+  Disconnects all connected listeners.
+
+  @within motion
+  @return ()
+]=]
 function motion:DisconnectAll(): ()
     self._head = nil
     return
 end
 
+--[=[
+  Listens until the predicate evaluates to true, then disconnects.
+
+  @within motion
+  @param predicate ((T...) -> boolean)
+  @return Connection
+]=]
 function motion:Until<T...>(
   predicate: ((T...) -> boolean),
   callback: ((T...) -> ())
@@ -123,6 +143,14 @@ function motion:Until<T...>(
   return connection
 end
 
+--[=[
+  Fires only when the check function evaluates to true.
+
+  @within motion
+  @param check () -> boolean
+  @param callback (T...) -> ()
+  @return Connection
+]=]
 function motion:WhileActive<T...>(check: () -> boolean, callback: (T...) -> ()): Connection
     local connection
     connection = self:Connect(function(...)
@@ -133,32 +161,71 @@ function motion:WhileActive<T...>(check: () -> boolean, callback: (T...) -> ()):
     return connection
 end
 
+--[=[
+  Fires the listener in a separate task using task.spawn, ensuring parallel execution.
+
+  @within motion
+  @param callback (T...) -> ()
+  @return Connection
+]=]
 function motion:ConnectForked<T...>(callback: (T...) -> ()): Connection
     return self:Connect(function(...)
         task.spawn(callback, ...)
     end)
 end
 
+--[=[
+  Defers execution using task.defer, waiting until the current thread completes.
+
+  @within motion
+  @param callback (T...) -> ()
+  @return Connection
+]=]
 function motion:ConnectDeferred<T...>(callback: (T...) -> ()): Connection
     return self:Connect(function(...)
         task.defer(callback, ...)
     end)
 end
 
+--[=[
+  Wraps the listener in a coroutine for concurrent execution.
+
+  @within motion
+  @param callback (T...) -> ()
+  @return Connection
+]=]
 function motion:ConnectAsync<T...>(callback: (T...) -> ()): Connection
     return self:Connect(function(...)
         coroutine.wrap(callback)(...)
     end)
 end
 
+--[=[
+    Fires the signal using `task.defer`, ensuring it runs after the current execution thread completes.
+
+    @within motion
+    @param ... T...
+]=]
 function motion:FireDeferred<T...>(...: T...)
     task.defer(self.Fire, self, ...)
 end
 
+--[=[
+    Fires the signal asynchronously using `task.spawn`, reducing potential performance bottlenecks.
+
+    @within motion
+    @param ... T...
+]=]
 function motion:FireAsync<T...>(...: T...)
     task.spawn(self.Fire, self, ...)
 end
 
+--[=[
+    Fires multiple sets of arguments in batch mode. Each value set is dispatched in sequence using `task.spawn`.
+
+    @within motion
+    @param ... T... Multiple tables of arguments (each a {T...})
+]=]
 function motion:FireBatched<T...>(...: T...)
     local batch = {...}
     task.spawn(function()
@@ -168,6 +235,12 @@ function motion:FireBatched<T...>(...: T...)
     end)
 end
 
+--[=[
+    Fires the signal through any registered middleware before invoking listeners.
+
+    @within motion
+    @param ... T...
+]=]
 function motion:FireWithMiddleware<T...>(...: T...)
     local current = self._head
     while current do
@@ -179,6 +252,13 @@ function motion:FireWithMiddleware<T...>(...: T...)
     end
 end
 
+--[=[
+    Applies a custom middleware to intercept signal execution. Only one middleware can be active at a time.
+
+    @within motion
+    @param middleware (next: (T...) -> (), ...T) -> ()
+    @return MiddlewareHandle
+]=]
 function motion:Use<T...>(middleware: (next: (T...) -> (), T...) -> ()): MiddlewareHandle
     local handle = {
         Disconnect = function()
@@ -193,6 +273,13 @@ function motion:Use<T...>(middleware: (next: (T...) -> (), T...) -> ()): Middlew
     return handle
 end
 
+--[=[
+    Filters events based on a predicate. Only events that return `true` are allowed through.
+
+    @within motion
+    @param predicate (T...) -> boolean
+    @return MiddlewareHandle
+]=]
 function motion:UseFilter<T...>(predicate: (T...) -> boolean): MiddlewareHandle
     return self:Use(function(next, ...)
         if predicate(...) then
@@ -201,12 +288,26 @@ function motion:UseFilter<T...>(predicate: (T...) -> boolean): MiddlewareHandle
     end)
 end
 
+--[=[
+    Transforms signal arguments before they are passed to listeners.
+
+    @within motion
+    @param mapper (T...) -> U...
+    @return MiddlewareHandle
+]=]
 function motion:UseMap<U...>(mapper: (T...) -> U...): MiddlewareHandle
     return self:Use(function(next, ...)
         next(mapper(...))
     end)
 end
 
+--[=[
+    Throttles the signal, allowing it to fire at most once per given time interval.
+
+    @within motion
+    @param seconds number
+    @return MiddlewareHandle
+]=]
 function motion:UseThrottle<T...>(seconds: number): MiddlewareHandle
     local lastCall = 0
     return self:Use(function(next, ...)
@@ -218,28 +319,49 @@ function motion:UseThrottle<T...>(seconds: number): MiddlewareHandle
     end)
 end
 
+--[=[
+    Debounces the signal. Only fires after no new signal is received within the given time frame.
+
+    @within motion
+    @param seconds number
+    @return MiddlewareHandle
+]=]
 function motion:UseDebounce<T...>(seconds: number): MiddlewareHandle
     local debounceTask
     return self:Use(function(next, ...)
-        local args = {...} -- Capture varargs
+        local args = {...}
         if debounceTask then
             task.cancel(debounceTask)
         end
         debounceTask = task.delay(seconds, function()
-            next(table.unpack(args)) -- Ensure varargs persist after delay
+            next(table.unpack(args))
         end)
     end)
 end
 
+--[=[
+    Delays the signal by the specified amount of time before calling listeners.
+
+    @within motion
+    @param seconds number
+    @return MiddlewareHandle
+]=]
 function motion:UseDelay<T...>(seconds: number): MiddlewareHandle
     return self:Use(function(next, ...)
-        local args = {...} -- Capture varargs explicitly
+        local args = {...}
         task.delay(seconds, function()
-            next(table.unpack(args)) -- Unpack varargs inside delayed function
+            next(table.unpack(args))
         end)
     end)
 end
 
+--[=[
+    Logs signal firings to the console for debugging purposes.
+
+    @within motion
+    @param prefix string? Optional log prefix
+    @return MiddlewareHandle
+]=]
 function motion:UseLog<T...>(prefix: string?): MiddlewareHandle
     return self:Use(function(next, ...)
         print((prefix or "[motion]"), ...)
@@ -247,17 +369,31 @@ function motion:UseLog<T...>(prefix: string?): MiddlewareHandle
     end)
 end
 
+--[=[
+    Wraps signal execution in a `pcall`, catching and handling any runtime errors.
+
+    @within motion
+    @param handler (any) -> () Error handler callback
+    @return MiddlewareHandle
+]=]
 function motion:UseCatch<T...>(handler: (any) -> ()): MiddlewareHandle
     return self:Use(function(next, ...)
         local success, err = pcall(function(...)
             next(...)
-        end, ...) -- Pass varargs explicitly to `pcall`
+        end, ...)
         if not success then
             handler(err)
         end
     end)
 end
 
+--[=[
+    Cancels the signal if the given predicate returns `true`.
+
+    @within motion
+    @param predicate (T...) -> boolean
+    @return MiddlewareHandle
+]=]
 function motion:UseCancel<T...>(predicate: (T...) -> boolean): MiddlewareHandle
     return self:Use(function(next, ...)
         if not predicate(...) then
@@ -266,6 +402,12 @@ function motion:UseCancel<T...>(predicate: (T...) -> boolean): MiddlewareHandle
     end)
 end
 
+--[=[
+    Returns the number of active listeners connected to the signal.
+
+    @within motion
+    @return number
+]=]
 function motion:GetListenerCount(): number
     local count = 0
     local current = self._head
@@ -278,6 +420,12 @@ function motion:GetListenerCount(): number
     return count
 end
 
+--[=[
+    Returns a list of all connection handles attached to this signal.
+
+    @within motion
+    @return { Connection }
+]=]
 function motion:GetConnections(): { Connection }
     local connections = {}
     local current = self._head
@@ -288,11 +436,22 @@ function motion:GetConnections(): { Connection }
     return connections
 end
 
+--[=[
+    Returns a string summary of the signal's current listener state.
+
+    @within motion
+    @return string
+]=]
 function motion:DebugDescribe(): string
     local description = `Motion Signal: Listener Count =  {self:GetListenerCount()} `
     return description
 end
 
+--[=[
+    Prints detailed debug information about the signal and its listeners.
+
+    @within motion
+]=]
 function motion:PrintDebugInfo(): ()
     output(self:DebugDescribe())
     local current = self._head
@@ -302,6 +461,13 @@ function motion:PrintDebugInfo(): ()
     end
 end
 
+--[=[
+    Checks if the given callback is currently connected to the signal.
+
+    @within motion
+    @param callback (T...) -> ()
+    @return boolean
+]=]
 function motion:IsConnected(callback: (T...) -> ()): boolean
     local current = self._head
     while current do
@@ -312,6 +478,5 @@ function motion:IsConnected(callback: (T...) -> ()): boolean
     end
     return false
 end
-
 
 return motion

@@ -1,0 +1,6 @@
+gitSourceBranch = "master"
+gitRepoUrl = "https://github.com/cosinewaves/motion" # From Git
+title = "motion"
+
+[home]
+enabled = false
