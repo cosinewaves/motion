@@ -5,6 +5,12 @@ local internalTypings = require(script.Parent.internalTypings)
 
 export type Connection = internalTypings.Connection
 
+--[=[
+    @class Connection
+
+    Represents a link between a signal and a listener callback.
+    Calling `Disconnect()` will remove the listener from the signal.
+]=]
 local Connection = {}
 Connection.__index = Connection
 
@@ -17,6 +23,15 @@ type InternalConnection = Connection & {
     _next: InternalConnection?,
 }
 
+--[=[
+    Creates a new connection object internally tied to a signal.
+
+    @param signal { _head: Connection? } -- The signal the connection is associated with.
+    @param callback (...any) -> () -- The listener function to be called on signal fire.
+    @return Connection
+
+    @within Connection
+]=]
 function Connection.new(signal: { _head: InternalConnection? }, callback: (...any) -> ()): Connection
     local self: InternalConnection = setmetatable({
         _signal = signal,
@@ -28,6 +43,11 @@ function Connection.new(signal: { _head: InternalConnection? }, callback: (...an
     return self
 end
 
+--[=[
+    Disconnects the connection, preventing the callback from being called again.
+
+    @within Connection
+]=]
 function Connection:Disconnect()
     local self = self :: InternalConnection
     if not self._connected then return end
@@ -47,6 +67,13 @@ function Connection:Disconnect()
     end
 end
 
+--[=[
+    Automatically disconnects the connection when the given Instance is destroyed.
+
+    @param instance Instance -- The Roblox instance to track for automatic disconnection.
+
+    @within Connection
+]=]
 function Connection:DisconnectOn(instance: Instance)
     local self = self :: InternalConnection
 
@@ -59,6 +86,16 @@ function Connection:DisconnectOn(instance: Instance)
     end
 end
 
+--[=[
+    Registers the connection to be cleaned up when a provided token object is disposed.
+
+    The token should be a table that has or will have a `__connectionCleanupCallbacks` array field.
+    This allows grouping multiple connections to clean up together.
+
+    @param token { __connectionCleanupCallbacks: { () -> () } }? -- The cleanup token to register with.
+
+    @within Connection
+]=]
 function Connection:UntilDestroyed(token: { __connectionCleanupCallbacks: { () -> () } }?)
     local self = self :: InternalConnection
 
