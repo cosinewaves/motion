@@ -93,7 +93,6 @@ end
     This allows grouping multiple connections to clean up together.
 
     @param token { __connectionCleanupCallbacks: { () -> () } }? -- The cleanup token to register with.
-
     @within Connection
 ]=]
 function Connection:UntilDestroyed(token: { __connectionCleanupCallbacks: { () -> () } }?)
