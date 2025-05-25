@@ -28,3 +28,5 @@
   Combine, merge, and filter signals — create reactive pipelines without a full Rx implementation.
 
 ---
+
+> To see a full list of functions and methods, see `/motion/internalTypings.lua`
